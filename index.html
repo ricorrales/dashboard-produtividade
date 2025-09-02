@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard de Produtividade - Acompanhe suas métricas e tarefas">
+    <meta name="author" content="Dashboard Produtividade">
+    <title>Dashboard de Produtividade</title>
+    
+    <!-- CSS Local -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="dashboard-title">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard de Produtividade
+                </h1>
+                <div class="header-actions">
+                    <div class="date-display">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="current-date"></span>
+                    </div>
+                    <button class="btn-refresh" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Seção de Métricas -->
+        <section class="metrics-section">
+            <h2 class="section-title">Métricas de Hoje</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-label">Tarefas Concluídas</h3>
+                        <p class="metric-value" id="tasks-completed">0</p>
+                        <span class="metric-change positive">+12%</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-label">Horas Produtivas</h3>
+                        <p class="metric-value" id="productive-hours">0h</p>
+                        <span class="metric-change positive">+8%</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-target"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-label">Metas Atingidas</h3>
+                        <p class="metric-value" id="goals-achieved">0%</p>
+                        <span class="metric-change negative">-3%</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-label">Sequência</h3>
+                        <p class="metric-value" id="streak-days">0 dias</p>
+                        <span class="metric-change positive">+1</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Gráficos -->
+        <section class="charts-section">
+            <h2 class="section-title">Análise Visual</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">Produtividade Semanal</h3>
+                    <canvas id="productivity-chart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">Distribuição de Tempo</h3>
+                    <canvas id="time-distribution-chart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">Progresso Mensal</h3>
+                    <canvas id="monthly-progress-chart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">Categorias de Tarefas</h3>
+                    <canvas id="task-categories-chart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Tarefas -->
+        <section class="tasks-section">
+            <div class="tasks-header">
+                <h2 class="section-title">Tarefas Recentes</h2>
+                <button class="btn-add-task" onclick="openTaskModal()">
+                    <i class="fas fa-plus"></i>
+                    Nova Tarefa
+                </button>
+            </div>
+            
+            <div class="tasks-container">
+                <div class="task-filters">
+                    <button class="filter-btn active" data-filter="all">Todas</button>
+                    <button class="filter-btn" data-filter="pending">Pendentes</button>
+                    <button class="filter-btn" data-filter="completed">Concluídas</button>
+                    <button class="filter-btn" data-filter="urgent">Urgentes</button>
+                </div>
+                
+                <div class="tasks-list" id="tasks-list">
+                    <!-- Tarefas serão carregadas dinamicamente -->
+                    <div class="task-item completed">
+                        <div class="task-checkbox">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="task-content">
+                            <h4 class="task-title">Revisar relatório mensal</h4>
+                            <p class="task-description">Análise dos dados de produtividade do time</p>
+                            <div class="task-meta">
+                                <span class="task-priority high">Alta</span>
+                                <span class="task-category">Trabalho</span>
+                                <span class="task-time">2h ago</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn-task-edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-task-delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="task-item pending">
+                        <div class="task-checkbox">
+                            <i class="far fa-circle"></i>
+                        </div>
+                        <div class="task-content">
+                            <h4 class="task-title">Preparar apresentação</h4>
+                            <p class="task-description">Slides para reunião com cliente na sexta-feira</p>
+                            <div class="task-meta">
+                                <span class="task-priority medium">Média</span>
+                                <span class="task-category">Trabalho</span>
+                                <span class="task-time">Vence em 2 dias</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn-task-edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-task-delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal para Nova Tarefa -->
+    <div class="modal-overlay" id="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nova Tarefa</h3>
+                <button class="btn-close-modal" onclick="closeTaskModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="task-form" id="task-form">
+                <div class="form-group">
+                    <label for="task-title-input">Título</label>
+                    <input type="text" id="task-title-input" placeholder="Digite o título da tarefa" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-description-input">Descrição</label>
+                    <textarea id="task-description-input" rows="3" placeholder="Descreva a tarefa (opcional)"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-priority-input">Prioridade</label>
+                        <select id="task-priority-input">
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-category-input">Categoria</label>
+                        <select id="task-category-input">
+                            <option value="trabalho">Trabalho</option>
+                            <option value="pessoal">Pessoal</option>
+                            <option value="estudo">Estudo</option>
+                            <option value="saude">Saúde</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-deadline-input">Prazo</label>
+                    <input type="datetime-local" id="task-deadline-input">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeTaskModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Local -->
+    <script src="js/app.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/tasks.js"></script>
+</body>
+</html>
