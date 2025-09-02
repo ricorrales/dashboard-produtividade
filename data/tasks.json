@@ -1,0 +1,391 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-09-02T14:45:00.000Z",
+  "metadata": {
+    "description": "Dashboard de Produtividade - Estrutura de dados JSON",
+    "author": "Ricardo",
+    "project": "Dashboard Produtividade",
+    "schema": "tasks-data-v1.0"
+  },
+  "tasks": [
+    {
+      "id": "task_001",
+      "title": "Implementar sistema de autenticação",
+      "description": "Criar sistema de login e registro de usuários com validação",
+      "status": "em_progresso",
+      "priority": "high",
+      "category": "trabalho",
+      "tags": ["desenvolvimento", "segurança", "backend"],
+      "createdAt": "2025-09-01T09:00:00.000Z",
+      "updatedAt": "2025-09-02T10:30:00.000Z",
+      "completedAt": null,
+      "deadline": "2025-09-10T18:00:00.000Z",
+      "estimatedHours": 8,
+      "actualHours": 5.5,
+      "assignee": "Ricardo",
+      "subtasks": [
+        {
+          "id": "subtask_001_1",
+          "title": "Criar tela de login",
+          "completed": true,
+          "completedAt": "2025-09-01T14:30:00.000Z"
+        },
+        {
+          "id": "subtask_001_2", 
+          "title": "Implementar validação de senha",
+          "completed": true,
+          "completedAt": "2025-09-02T10:30:00.000Z"
+        },
+        {
+          "id": "subtask_001_3",
+          "title": "Configurar JWT tokens",
+          "completed": false,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "id": "task_002",
+      "title": "Exercitar-se 30 minutos",
+      "description": "Caminhada ou exercício físico para manter a saúde",
+      "status": "concluida",
+      "priority": "medium",
+      "category": "saude",
+      "tags": ["saúde", "exercício", "bem-estar"],
+      "createdAt": "2025-09-01T07:00:00.000Z",
+      "updatedAt": "2025-09-01T18:45:00.000Z",
+      "completedAt": "2025-09-01T18:45:00.000Z",
+      "deadline": "2025-09-01T20:00:00.000Z",
+      "estimatedHours": 0.5,
+      "actualHours": 0.5,
+      "assignee": "Ricardo",
+      "subtasks": []
+    },
+    {
+      "id": "task_003",
+      "title": "Revisar código do dashboard",
+      "description": "Code review das funcionalidades implementadas",
+      "status": "pendente",
+      "priority": "high",
+      "category": "trabalho", 
+      "tags": ["revisão", "qualidade", "dashboard"],
+      "createdAt": "2025-09-02T08:15:00.000Z",
+      "updatedAt": "2025-09-02T08:15:00.000Z",
+      "completedAt": null,
+      "deadline": "2025-09-03T17:00:00.000Z",
+      "estimatedHours": 2,
+      "actualHours": 0,
+      "assignee": "Ricardo",
+      "subtasks": [
+        {
+          "id": "subtask_003_1",
+          "title": "Revisar app.js",
+          "completed": false,
+          "completedAt": null
+        },
+        {
+          "id": "subtask_003_2",
+          "title": "Revisar charts.js", 
+          "completed": false,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "id": "task_004",
+      "title": "Estudar TypeScript avançado",
+      "description": "Aprofundar conhecimentos em TypeScript para próximos projetos",
+      "status": "em_progresso",
+      "priority": "low",
+      "category": "estudo",
+      "tags": ["typescript", "programação", "aprendizado"],
+      "createdAt": "2025-08-30T10:00:00.000Z",
+      "updatedAt": "2025-09-01T16:20:00.000Z",
+      "completedAt": null,
+      "deadline": "2025-09-15T23:59:00.000Z",
+      "estimatedHours": 12,
+      "actualHours": 6.5,
+      "assignee": "Ricardo",
+      "subtasks": [
+        {
+          "id": "subtask_004_1",
+          "title": "Módulo 1: Types avançados",
+          "completed": true,
+          "completedAt": "2025-08-31T20:30:00.000Z"
+        },
+        {
+          "id": "subtask_004_2",
+          "title": "Módulo 2: Generics",
+          "completed": false,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "id": "task_005",
+      "title": "Organizar documentos pessoais",
+      "description": "Digitalizar e organizar documentos importantes",
+      "status": "pendente",
+      "priority": "medium",
+      "category": "pessoal",
+      "tags": ["organização", "documentos", "pessoal"],
+      "createdAt": "2025-09-02T11:30:00.000Z",
+      "updatedAt": "2025-09-02T11:30:00.000Z", 
+      "completedAt": null,
+      "deadline": "2025-09-07T18:00:00.000Z",
+      "estimatedHours": 3,
+      "actualHours": 0,
+      "assignee": "Ricardo",
+      "subtasks": []
+    }
+  ],
+  "weeklyGoals": {
+    "currentWeek": {
+      "startDate": "2025-09-01T00:00:00.000Z",
+      "endDate": "2025-09-07T23:59:59.999Z",
+      "week": 36,
+      "year": 2025,
+      "goals": [
+        {
+          "id": "goal_w36_001",
+          "title": "Completar 15 tarefas",
+          "description": "Meta de produtividade semanal",
+          "target": 15,
+          "current": 8,
+          "progress": 53.33,
+          "status": "em_progresso",
+          "category": "produtividade"
+        },
+        {
+          "id": "goal_w36_002", 
+          "title": "Trabalhar 40 horas",
+          "description": "Meta de horas trabalhadas na semana",
+          "target": 40,
+          "current": 28.5,
+          "progress": 71.25,
+          "status": "em_progresso",
+          "category": "trabalho"
+        },
+        {
+          "id": "goal_w36_003",
+          "title": "Exercitar-se 5 dias",
+          "description": "Meta de exercícios semanais",
+          "target": 5,
+          "current": 3,
+          "progress": 60.0,
+          "status": "em_progresso",
+          "category": "saude"
+        },
+        {
+          "id": "goal_w36_004",
+          "title": "Estudar 10 horas",
+          "description": "Meta de horas de estudo semanal",
+          "target": 10,
+          "current": 6.5,
+          "progress": 65.0,
+          "status": "em_progresso",
+          "category": "estudo"
+        }
+      ],
+      "overallProgress": 62.39,
+      "status": "em_progresso"
+    },
+    "previousWeeks": [
+      {
+        "startDate": "2025-08-25T00:00:00.000Z",
+        "endDate": "2025-08-31T23:59:59.999Z",
+        "week": 35,
+        "year": 2025,
+        "overallProgress": 85.2,
+        "status": "concluida",
+        "goalsAchieved": 3,
+        "totalGoals": 4
+      }
+    ]
+  },
+  "workTimeHistory": [
+    {
+      "id": "session_001",
+      "date": "2025-09-01",
+      "startTime": "2025-09-01T09:00:00.000Z",
+      "endTime": "2025-09-01T12:30:00.000Z",
+      "duration": 12600000,
+      "durationFormatted": "3h 30min",
+      "category": "trabalho",
+      "taskId": "task_001",
+      "taskTitle": "Implementar sistema de autenticação",
+      "description": "Desenvolvimento da tela de login",
+      "productivity": 9,
+      "mood": "focado",
+      "location": "home_office",
+      "interruptions": 1,
+      "notes": "Boa sessão de trabalho, implementei a tela básica de login"
+    },
+    {
+      "id": "session_002",
+      "date": "2025-09-01",
+      "startTime": "2025-09-01T14:00:00.000Z",
+      "endTime": "2025-09-01T16:15:00.000Z", 
+      "duration": 8100000,
+      "durationFormatted": "2h 15min",
+      "category": "trabalho",
+      "taskId": "task_001",
+      "taskTitle": "Implementar sistema de autenticação",
+      "description": "Validação de formulário e segurança",
+      "productivity": 8,
+      "mood": "concentrado",
+      "location": "home_office",
+      "interruptions": 0,
+      "notes": "Implementei validação de senha e critérios de segurança"
+    },
+    {
+      "id": "session_003",
+      "date": "2025-09-01",
+      "startTime": "2025-09-01T18:00:00.000Z",
+      "endTime": "2025-09-01T18:30:00.000Z",
+      "duration": 1800000,
+      "durationFormatted": "30min",
+      "category": "saude",
+      "taskId": "task_002",
+      "taskTitle": "Exercitar-se 30 minutos",
+      "description": "Caminhada no parque",
+      "productivity": 10,
+      "mood": "energizado",
+      "location": "parque",
+      "interruptions": 0,
+      "notes": "Excelente caminhada, tempo perfeito"
+    },
+    {
+      "id": "session_004",
+      "date": "2025-09-02",
+      "startTime": "2025-09-02T09:30:00.000Z",
+      "endTime": "2025-09-02T11:45:00.000Z",
+      "duration": 8100000,
+      "durationFormatted": "2h 15min",
+      "category": "trabalho",
+      "taskId": "task_001",
+      "taskTitle": "Implementar sistema de autenticação",
+      "description": "Configuração de tokens JWT",
+      "productivity": 7,
+      "mood": "desafiado",
+      "location": "home_office",
+      "interruptions": 2,
+      "notes": "Alguns desafios com configuração JWT, mas progresso feito"
+    },
+    {
+      "id": "session_005",
+      "date": "2025-09-02",
+      "startTime": "2025-09-02T14:30:00.000Z",
+      "endTime": "2025-09-02T18:00:00.000Z",
+      "duration": 12600000,
+      "durationFormatted": "3h 30min",
+      "category": "estudo",
+      "taskId": "task_004",
+      "taskTitle": "Estudar TypeScript avançado",
+      "description": "Módulo sobre Generics",
+      "productivity": 9,
+      "mood": "absorvendo",
+      "location": "home_office",
+      "interruptions": 0,
+      "notes": "Excelente sessão de estudo, conceitos complexos ficaram claros"
+    }
+  ],
+  "statistics": {
+    "daily": {
+      "2025-09-01": {
+        "tasksCompleted": 1,
+        "tasksCreated": 2,
+        "hoursWorked": 6.25,
+        "productivity": 8.5,
+        "categories": {
+          "trabalho": 5.75,
+          "saude": 0.5,
+          "estudo": 0,
+          "pessoal": 0
+        }
+      },
+      "2025-09-02": {
+        "tasksCompleted": 0,
+        "tasksCreated": 3,
+        "hoursWorked": 5.75,
+        "productivity": 8.0,
+        "categories": {
+          "trabalho": 2.25,
+          "saude": 0,
+          "estudo": 3.5,
+          "pessoal": 0
+        }
+      }
+    },
+    "totals": {
+      "allTimeTasks": 47,
+      "completedTasks": 23,
+      "totalHoursWorked": 156.5,
+      "averageProductivity": 8.2,
+      "currentStreak": 5,
+      "longestStreak": 12
+    }
+  },
+  "settings": {
+    "notifications": {
+      "enabled": true,
+      "deadlineReminder": 24,
+      "dailyGoalReminder": true,
+      "weeklyReportDay": "sunday"
+    },
+    "workSchedule": {
+      "startTime": "09:00",
+      "endTime": "18:00",
+      "lunchBreak": "12:00-13:00",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    "goals": {
+      "dailyTaskTarget": 3,
+      "weeklyHourTarget": 40,
+      "monthlyCompletionTarget": 85
+    }
+  },
+  "categories": {
+    "trabalho": {
+      "name": "Trabalho",
+      "color": "#6366f1",
+      "icon": "fas fa-briefcase",
+      "description": "Tarefas relacionadas ao trabalho profissional"
+    },
+    "pessoal": {
+      "name": "Pessoal", 
+      "color": "#8b5cf6",
+      "icon": "fas fa-user",
+      "description": "Tarefas e atividades pessoais"
+    },
+    "estudo": {
+      "name": "Estudo",
+      "color": "#10b981", 
+      "icon": "fas fa-graduation-cap",
+      "description": "Aprendizado e desenvolvimento pessoal"
+    },
+    "saude": {
+      "name": "Saúde",
+      "color": "#f59e0b",
+      "icon": "fas fa-heart",
+      "description": "Saúde física e mental"
+    }
+  },
+  "tags": {
+    "desenvolvimento": {
+      "name": "Desenvolvimento",
+      "color": "#06b6d4",
+      "count": 12
+    },
+    "urgente": {
+      "name": "Urgente", 
+      "color": "#ef4444",
+      "count": 3
+    },
+    "revisao": {
+      "name": "Revisão",
+      "color": "#84cc16",
+      "count": 8
+    }
+  }
+}
