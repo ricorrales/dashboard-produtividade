@@ -61,6 +61,57 @@
     background: rgba(26, 26, 46, 0.8) !important;
 }
 
+/* Estabilizar métricas que estão aparecendo e sumindo */
+.metric-card {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    
+    /* Dimensões estáveis */
+    min-width: 200px !important;
+    min-height: 120px !important;
+    width: 100% !important;
+    
+    /* Evitar mudanças de layout */
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    
+    /* Evitar animações que causam problemas */
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+
+.metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 20px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+}
+
+/* Estabilizar elementos de texto das métricas */
+.metric-value,
+#tasks-completed,
+#productive-hours,
+#goals-achieved,
+#streak-days {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #f8fafc !important;
+    font-weight: bold !important;
+}
+
+/* Debug visual para métricas */
+.metric-card {
+    border: 2px solid #f59e0b !important;
+    background: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Debug visual para gráficos */
 canvas[id*="chart"] {
     border: 1px solid #10b981 !important;
     background: rgba(16, 185, 129, 0.1) !important;
