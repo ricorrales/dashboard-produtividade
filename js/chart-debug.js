@@ -23,6 +23,27 @@ function setupChartMonitoring() {
     let lastCheck = {};
     
     function checkElements() {
+        // Debug inicial para verificar se elementos existem
+        if (!lastCheck.initialCheck) {
+            console.log('🔍 Verificação inicial dos elementos:');
+            chartIds.forEach(id => {
+                const canvas = document.getElementById(id);
+                console.log(`📊 Canvas ${id}:`, !!canvas, canvas ? `${canvas.offsetWidth}x${canvas.offsetHeight}` : 'não encontrado');
+            });
+            metricIds.forEach(id => {
+                const element = document.getElementById(id);
+                const parentCard = element ? element.closest('.metric-card') : null;
+                console.log(`📈 Métrica ${id}:`, !!element, element ? `"${element.textContent.trim()}"` : 'não encontrado');
+                console.log(`📦 Container métrica ${id}:`, !!parentCard, parentCard ? 'encontrado' : 'não encontrado');
+            });
+            
+            // Verificar se a grid de métricas existe
+            const metricsGrid = document.querySelector('.metrics-grid');
+            console.log('📊 Grid de métricas:', !!metricsGrid, metricsGrid ? `${metricsGrid.children.length} cards` : 'não encontrada');
+            
+            lastCheck.initialCheck = true;
+        }
+        
         // Verificar gráficos
         chartIds.forEach(id => {
             const canvas = document.getElementById(id);
