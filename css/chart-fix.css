@@ -1,0 +1,44 @@
+/* Correção específica para garantir visibilidade dos gráficos */
+.chart-container canvas {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 200px !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Evitar que animações afetem os canvas */
+.chart-container canvas,
+canvas[id*="chart"] {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+
+/* Garantir que o container dos gráficos seja estável */
+.charts-grid {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.chart-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+}
+
+/* Debug para visualizar problemas */
+.chart-container {
+    border: 2px solid #6366f1 !important;
+    background: rgba(26, 26, 46, 0.8) !important;
+}
+
+canvas[id*="chart"] {
+    border: 1px solid #10b981 !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+}
