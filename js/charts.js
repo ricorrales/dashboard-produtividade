@@ -1076,26 +1076,52 @@ class DashboardInitializer {
     }
 }
 
-// Inicializar quando DOM estiver pronto
-function initializeChartsSystem() {
-    console.log('🚀 Iniciando sistema de gráficos...');
-    console.log('📊 Estado do DOM:', document.readyState);
-    console.log('📈 Chart.js disponível:', typeof Chart !== 'undefined');
-    
-    // Aguardar um pouco mais para garantir que tudo esteja carregado
+// ===== INICIALIZAÇÃO ÚNICA E SIMPLES =====
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            waitForChartJS(() => {
+                if (window.dashboard) {
+                    initializeDashboardCharts();
+                }
+            });
+        }, 1000);
+    });
+} else {
     setTimeout(() => {
-        new DashboardInitializer();
+        waitForChartJS(() => {
+            if (window.dashboard) {
+                initializeDashboardCharts();
+            }
+        });
     }, 1000);
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('📋 DOM carregado, aguardando para inicializar gráficos...');
-        setTimeout(initializeChartsSystem, 500);
-    });
-} else {
-    console.log('📋 DOM já carregado, inicializando gráficos...');
-    initializeChartsSystem();
+function initializeDashboardCharts() {
+    try {
+        console.log('🚀 Inicializando sistema de gráficos único...');
+        
+        // Verificar se já foi inicializado
+        if (window.dashboard.charts) {
+            console.log('⚠️ Gráficos já inicializados, pulando...');
+            return;
+        }
+        
+        // Adicionar dados de teste se necessário
+        if (window.dashboard.tasks.length === 0) {
+            console.log('📊 Adicionando dados de teste...');
+            if (typeof window.addTestData === 'function') {
+                window.addTestData();
+            }
+        }
+        
+        // Inicializar gráficos
+        window.dashboard.charts = new ProductivityCharts(window.dashboard);
+        console.log('✅ Sistema de gráficos inicializado com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Erro ao inicializar gráficos:', error);
+    }
 }
 
 // Adicionar comando global para desenvolvedores
