@@ -33,17 +33,31 @@
     transform: none !important;
 }
 
-/* Estabilizar o grid de gráficos */
+/* Forçar grid estável para métricas - SOLUÇÃO DEFINITIVA */
+.metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    min-height: 140px !important;
+    
+    /* Evitar recálculos de layout */
+    contain: layout !important;
+}
+
+/* Forçar grid estável para gráficos */
 .charts-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px !important;
     visibility: visible !important;
     opacity: 1 !important;
     
-    /* Evitar mudanças de layout */
+    /* Evitar recálculos de layout */
+    contain: layout !important;
     width: 100% !important;
-    box-sizing: border-box !important;
 }
 
 /* Forçar estabilidade das seções */
@@ -121,6 +135,23 @@
 .metric-card {
     border: 2px solid #f59e0b !important;
     background: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Responsividade com estabilidade forçada */
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
 
 /* Debug visual para gráficos */
