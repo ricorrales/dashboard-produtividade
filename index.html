@@ -10,8 +10,40 @@
     <!-- CSS Local -->
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <!-- Chart.js CDNs com fallback -->
+    <script>
+        // Sistema de carregamento robusto para Chart.js
+        (function() {
+            const cdnUrls = [
+                'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js',
+                'https://unpkg.com/chart.js@4.4.0/dist/chart.min.js'
+            ];
+            
+            function loadChartJS(url, index = 0) {
+                if (index >= cdnUrls.length) {
+                    console.error('❌ Todos os CDNs falharam. Chart.js não pode ser carregado.');
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = url;
+                script.onload = function() {
+                    console.log('✅ Chart.js carregado com sucesso de:', url);
+                    console.log('📊 Versão:', Chart.version);
+                    window.chartJSLoaded = true;
+                };
+                script.onerror = function() {
+                    console.warn('⚠️ CDN falhou:', url);
+                    loadChartJS(cdnUrls[index + 1], index + 1);
+                };
+                document.head.appendChild(script);
+            }
+            
+            // Tentar primeiro CDN
+            loadChartJS(cdnUrls[0]);
+        })();
+    </script>
     
     <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

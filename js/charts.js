@@ -5,13 +5,27 @@
  */
 
 // Verificar se Chart.js está disponível
-if (typeof Chart === 'undefined') {
-    console.error('❌ Chart.js não está carregado! Verifique se o CDN está funcionando.');
-    console.error('🔗 CDN esperado: https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js');
-} else {
-    console.log('✅ Chart.js carregado com sucesso!');
-    console.log('📊 Versão:', Chart.version);
+function checkChartJS() {
+    if (typeof Chart !== 'undefined') {
+        console.log('✅ Chart.js carregado com sucesso!');
+        console.log('📊 Versão:', Chart.version);
+        return true;
+    } else if (window.chartJSLoaded) {
+        console.log('✅ Chart.js marcado como carregado!');
+        return true;
+    } else {
+        console.log('⏳ Aguardando Chart.js carregar...');
+        return false;
+    }
 }
+
+// Verificar periodicamente
+let chartJSCheckInterval = setInterval(() => {
+    if (checkChartJS()) {
+        clearInterval(chartJSCheckInterval);
+        console.log('🚀 Chart.js pronto para uso!');
+    }
+}, 100);
 
 class ProductivityCharts {
     constructor(dashboard) {
