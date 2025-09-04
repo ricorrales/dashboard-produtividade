@@ -4,28 +4,30 @@
  * Responsivo e otimizado para o tema escuro
  */
 
-// Verificar se Chart.js está disponível
-function checkChartJS() {
-    if (typeof Chart !== 'undefined') {
-        console.log('✅ Chart.js carregado com sucesso!');
-        console.log('📊 Versão:', Chart.version);
-        return true;
-    } else if (window.chartJSLoaded) {
-        console.log('✅ Chart.js marcado como carregado!');
-        return true;
-    } else {
-        console.log('⏳ Aguardando Chart.js carregar...');
-        return false;
-    }
+// Função simples para verificar se Chart.js está disponível
+function isChartJSReady() {
+    return typeof Chart !== 'undefined';
 }
 
-// Verificar periodicamente
-let chartJSCheckInterval = setInterval(() => {
-    if (checkChartJS()) {
-        clearInterval(chartJSCheckInterval);
-        console.log('🚀 Chart.js pronto para uso!');
+// Aguardar Chart.js de forma simples
+function waitForChartJS(callback, maxTries = 50) {
+    let tries = 0;
+    
+    function check() {
+        tries++;
+        
+        if (isChartJSReady()) {
+            console.log('✅ Chart.js pronto! Versão:', Chart.version);
+            callback();
+        } else if (tries < maxTries) {
+            setTimeout(check, 200);
+        } else {
+            console.error('❌ Chart.js não carregou após', maxTries, 'tentativas');
+        }
     }
-}, 100);
+    
+    check();
+}
 
 class ProductivityCharts {
     constructor(dashboard) {
@@ -970,53 +972,47 @@ class ProductivityCharts {
 // Adicionar ao escopo global para acesso fácil
 window.ProductivityCharts = ProductivityCharts;
 
-// ===== INICIALIZADOR ROBUSTO PARA GRÁFICOS =====
+// ===== INICIALIZADOR SIMPLIFICADO PARA GRÁFICOS =====
 class DashboardInitializer {
     constructor() {
-        this.maxRetries = 10;
-        this.retryDelay = 500;
-        this.currentRetry = 0;
         this.init();
     }
 
     init() {
-        this.waitForDependencies();
+        console.log('🚀 Iniciando sistema de gráficos...');
+        console.log('📊 Estado do DOM:', document.readyState);
+        
+        // Aguardar Chart.js e Dashboard estarem prontos
+        waitForChartJS(() => {
+            this.waitForDashboard();
+        });
     }
 
-    waitForDependencies() {
-        console.log('🔍 Verificando dependências...');
-        console.log('📊 Dashboard:', typeof window.dashboard);
-        console.log('📈 Chart.js:', typeof Chart);
-        
-        if (window.dashboard && typeof Chart !== 'undefined') {
-            console.log('✅ Todas as dependências encontradas!');
+    waitForDashboard() {
+        if (window.dashboard) {
+            console.log('✅ Dashboard encontrado! Inicializando gráficos...');
             this.initializeCharts();
-        } else if (this.currentRetry < this.maxRetries) {
-            this.currentRetry++;
-            console.warn(`⏳ Tentativa ${this.currentRetry}/${this.maxRetries} - Aguardando dependências...`);
-            console.log('📊 Dashboard status:', window.dashboard ? 'OK' : 'NÃO ENCONTRADO');
-            console.log('📈 Chart.js status:', typeof Chart !== 'undefined' ? 'OK' : 'NÃO ENCONTRADO');
-            setTimeout(() => this.waitForDependencies(), this.retryDelay);
         } else {
-            console.error('❌ Falha ao inicializar gráficos após múltiplas tentativas');
-            console.error('🔍 Última verificação:');
-            console.error('  - Dashboard:', window.dashboard);
-            console.error('  - Chart.js:', typeof Chart);
-            console.error('  - DOM Ready:', document.readyState);
+            console.log('⏳ Aguardando dashboard...');
+            setTimeout(() => this.waitForDashboard(), 500);
         }
     }
 
     initializeCharts() {
         try {
             console.log('🔧 Inicializando sistema de gráficos...');
-            console.log('📊 Dashboard encontrado:', window.dashboard);
-            console.log('📈 Chart.js disponível:', typeof Chart !== 'undefined');
             
             // Verificar se o dashboard tem os métodos necessários
             if (!window.dashboard.tasks || !window.dashboard.workingSessions) {
                 console.warn('⚠️ Dashboard não tem dados necessários, aguardando...');
                 setTimeout(() => this.initializeCharts(), 1000);
                 return;
+            }
+
+            // Adicionar dados de teste se não houver dados
+            if (window.dashboard.tasks.length === 0) {
+                console.log('📊 Adicionando dados de teste para demonstração...');
+                window.dashboard.addTestData();
             }
             
             window.dashboard.charts = new ProductivityCharts(window.dashboard);
