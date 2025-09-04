@@ -1308,6 +1308,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         console.log('💻 Modo desenvolvimento ativo. Use addTestData() para adicionar dados de teste.');
+        
+        // Disponibilizar também como método do dashboard
+        window.dashboard.addTestData = window.addTestData;
     }
 
     console.log('🚀 Dashboard de Produtividade carregado com sucesso!');
