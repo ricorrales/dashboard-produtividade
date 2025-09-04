@@ -1,4 +1,21 @@
-/* Correção específica para garantir visibilidade dos gráficos */
+/* Correção específica para garantir estabilidade dos gráficos */
+.chart-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    
+    /* Dimensões estáveis */
+    min-width: 300px !important;
+    min-height: 250px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    
+    /* Evitar redimensionamento */
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+}
+
 .chart-container canvas {
     display: block !important;
     visibility: visible !important;
@@ -6,33 +23,39 @@
     width: 100% !important;
     height: auto !important;
     min-height: 200px !important;
+    max-height: 400px !important;
     position: relative !important;
     z-index: 1 !important;
-}
-
-/* Evitar que animações afetem os canvas */
-.chart-container canvas,
-canvas[id*="chart"] {
+    
+    /* Evitar que animações afetem os canvas */
     animation: none !important;
     transition: none !important;
     transform: none !important;
 }
 
-/* Garantir que o container dos gráficos seja estável */
+/* Estabilizar o grid de gráficos */
 .charts-grid {
     display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 20px !important;
     visibility: visible !important;
     opacity: 1 !important;
+    
+    /* Evitar mudanças de layout */
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
-.chart-container {
+/* Forçar estabilidade das seções */
+.charts-section {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    position: relative !important;
+    margin: 20px 0 !important;
+    padding: 20px !important;
 }
 
-/* Debug para visualizar problemas */
+/* Debug visual para ver os containers */
 .chart-container {
     border: 2px solid #6366f1 !important;
     background: rgba(26, 26, 46, 0.8) !important;

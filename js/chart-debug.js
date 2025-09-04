@@ -30,7 +30,7 @@ function setupChartMonitoring() {
                 height: canvas ? canvas.offsetHeight : 0
             };
             
-            // Detectar mudanças
+            // Detectar mudanças significativas
             if (lastCheck[id]) {
                 const prev = lastCheck[id];
                 if (prev.exists !== exists) {
@@ -42,7 +42,11 @@ function setupChartMonitoring() {
                 if (prev.hasChart !== hasChart) {
                     console.warn(`🚨 Canvas ${id} mudou gráfico: ${prev.hasChart} → ${hasChart}`);
                 }
-                if (prev.width !== status.width || prev.height !== status.height) {
+                
+                // Só alertar sobre mudanças de tamanho significativas (>10px ou zero)
+                const widthDiff = Math.abs(prev.width - status.width);
+                const heightDiff = Math.abs(prev.height - status.height);
+                if ((widthDiff > 10 || heightDiff > 10) || (status.width === 0 || status.height === 0)) {
                     console.warn(`🚨 Canvas ${id} mudou tamanho: ${prev.width}x${prev.height} → ${status.width}x${status.height}`);
                 }
             }
