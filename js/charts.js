@@ -1012,7 +1012,18 @@ class DashboardInitializer {
             // Adicionar dados de teste se não houver dados
             if (window.dashboard.tasks.length === 0) {
                 console.log('📊 Adicionando dados de teste para demonstração...');
-                window.dashboard.addTestData();
+                if (typeof window.addTestData === 'function') {
+                    window.addTestData();
+                } else {
+                    console.warn('⚠️ Função addTestData não encontrada, criando dados básicos...');
+                    // Criar dados básicos diretamente
+                    window.dashboard.createTask({
+                        title: 'Tarefa de Exemplo',
+                        description: 'Esta é uma tarefa de exemplo para demonstração',
+                        priority: 'medium',
+                        category: 'trabalho'
+                    });
+                }
             }
             
             window.dashboard.charts = new ProductivityCharts(window.dashboard);
