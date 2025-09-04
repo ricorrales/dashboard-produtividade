@@ -140,12 +140,26 @@ class ProductivityCharts {
     // ===== CRIAÇÃO DOS GRÁFICOS =====
     createAllCharts() {
         try {
-            this.createProductivityChart();
-            this.createTaskCompletionChart();
-            this.createWeeklyProgressChart();
-            this.createCategoryDistributionChart();
+            console.log('🔄 Criando gráficos...');
+            
+            // Aguardar um pouco para garantir que o DOM esteja pronto
+            setTimeout(() => {
+                this.createProductivityChart();
+                this.createTaskCompletionChart();
+                this.createWeeklyProgressChart();
+                this.createCategoryDistributionChart();
+                
+                console.log('✅ Todos os gráficos criados com sucesso!');
+                
+                // Verificar se todos os gráficos foram criados
+                const chartCount = Object.keys(this.charts).length;
+                console.log(`📊 Total de gráficos criados: ${chartCount}`);
+                
+                // Forçar redraw dos gráficos
+                this.updateAllCharts();
+            }, 100);
         } catch (error) {
-            console.error('Erro ao criar gráficos:', error);
+            console.error('❌ Erro ao criar gráficos:', error);
             this.dashboard?.showFeedback('Erro ao carregar gráficos.', 'error');
         }
     }
@@ -153,10 +167,20 @@ class ProductivityCharts {
     // ===== 1. GRÁFICO DE PRODUTIVIDADE SEMANAL (Commits/Sessões) =====
     createProductivityChart() {
         const canvas = document.getElementById('productivity-chart');
-        if (!canvas) return;
+        if (!canvas) {
+            console.warn('⚠️ Canvas productivity-chart não encontrado');
+            return;
+        }
+
+        // Destruir gráfico existente se houver
+        if (this.charts.productivity) {
+            this.charts.productivity.destroy();
+        }
 
         const ctx = canvas.getContext('2d');
         const data = this.getProductivityData();
+        
+        console.log('📊 Criando gráfico de produtividade com dados:', data);
 
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
         gradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
@@ -486,19 +510,33 @@ class ProductivityCharts {
 
         last7Days.forEach(date => {
             // Sessões de trabalho por dia
-            const daySessionsCount = this.dashboard.workingSessions.filter(session => {
+            const daySessionsCount = this.dashboard.workingSessions?.filter(session => {
                 if (!session.startTime) return false;
                 return new Date(session.startTime).toDateString() === date.toDateString();
-            }).length;
+            }).length || 0;
             sessions.push(daySessionsCount);
 
             // Tarefas criadas por dia
-            const dayTasksCount = this.dashboard.tasks.filter(task => {
+            const dayTasksCount = this.dashboard.tasks?.filter(task => {
                 if (!task.createdAt) return false;
                 return new Date(task.createdAt).toDateString() === date.toDateString();
-            }).length;
+            }).length || 0;
             tasksCreated.push(dayTasksCount);
         });
+
+        // Se não há dados, usar dados de exemplo
+        if (sessions.every(s => s === 0) && tasksCreated.every(t => t === 0)) {
+            return {
+                labels: last7Days.map(date => {
+                    return date.toLocaleDateString('pt-BR', { 
+                        weekday: 'short', 
+                        day: '2-digit' 
+                    });
+                }),
+                sessions: [3, 5, 2, 4, 6, 3, 4], // Dados de exemplo
+                tasksCreated: [2, 4, 1, 3, 5, 2, 3] // Dados de exemplo
+            };
+        }
 
         return {
             labels: last7Days.map(date => {
@@ -519,19 +557,33 @@ class ProductivityCharts {
 
         last7Days.forEach(date => {
             // Tarefas completadas por dia
-            const completedCount = this.dashboard.tasks.filter(task => {
+            const completedCount = this.dashboard.tasks?.filter(task => {
                 if (!task.completedAt) return false;
                 return new Date(task.completedAt).toDateString() === date.toDateString();
-            }).length;
+            }).length || 0;
             completed.push(completedCount);
 
             // Tarefas criadas por dia
-            const createdCount = this.dashboard.tasks.filter(task => {
+            const createdCount = this.dashboard.tasks?.filter(task => {
                 if (!task.createdAt) return false;
                 return new Date(task.createdAt).toDateString() === date.toDateString();
-            }).length;
+            }).length || 0;
             created.push(createdCount);
         });
+
+        // Se não há dados, usar dados de exemplo
+        if (completed.every(c => c === 0) && created.every(c => c === 0)) {
+            return {
+                labels: last7Days.map(date => {
+                    return date.toLocaleDateString('pt-BR', { 
+                        weekday: 'short', 
+                        day: '2-digit' 
+                    });
+                }),
+                completed: [1, 3, 0, 2, 4, 1, 2], // Dados de exemplo
+                created: [2, 4, 1, 3, 5, 2, 3] // Dados de exemplo
+            };
+        }
 
         return {
             labels: last7Days.map(date => {
@@ -546,20 +598,29 @@ class ProductivityCharts {
     }
 
     getWeeklyProgressData() {
-        const totalTasks = this.dashboard.tasks.length;
-        const completedTasks = this.dashboard.tasks.filter(t => t.completed).length;
+        const totalTasks = this.dashboard.tasks?.length || 0;
+        const completedTasks = this.dashboard.tasks?.filter(t => t.completed).length || 0;
         
         // Tarefas em progresso (com deadline próximo mas não completadas)
         const now = new Date();
         const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
         
-        const inProgressTasks = this.dashboard.tasks.filter(task => {
+        const inProgressTasks = this.dashboard.tasks?.filter(task => {
             if (task.completed || !task.deadline) return false;
             const deadline = new Date(task.deadline);
             return deadline <= nextWeek && deadline >= now;
-        }).length;
+        }).length || 0;
 
         const pendingTasks = totalTasks - completedTasks - inProgressTasks;
+
+        // Se não há dados, usar dados de exemplo
+        if (totalTasks === 0) {
+            return {
+                completed: 8,
+                inProgress: 5,
+                pending: 3
+            };
+        }
 
         return {
             completed: completedTasks,
@@ -581,12 +642,21 @@ class ProductivityCharts {
         const completed = [];
 
         categories.forEach(category => {
-            const categoryTasks = this.dashboard.tasks.filter(t => t.category === category);
+            const categoryTasks = this.dashboard.tasks?.filter(t => t.category === category) || [];
             const categoryCompleted = categoryTasks.filter(t => t.completed);
             
             total.push(categoryTasks.length);
             completed.push(categoryCompleted.length);
         });
+
+        // Se não há dados, usar dados de exemplo
+        if (total.every(t => t === 0)) {
+            return {
+                labels: categories.map(cat => categoryNames[cat]),
+                total: [6, 4, 3, 2], // Dados de exemplo
+                completed: [4, 2, 2, 1] // Dados de exemplo
+            };
+        }
 
         return {
             labels: categories.map(cat => categoryNames[cat]),
@@ -611,18 +681,18 @@ class ProductivityCharts {
     // ===== ATUALIZAÇÃO DOS GRÁFICOS =====
     updateAllCharts() {
         try {
-            Object.values(this.charts).forEach(chart => {
-                if (chart && typeof chart.destroy === 'function') {
-                    chart.destroy();
+            console.log('🔄 Atualizando dados dos gráficos...');
+            
+            // Atualizar dados sem destruir os gráficos
+            Object.keys(this.charts).forEach(chartName => {
+                if (this.charts[chartName]) {
+                    this.updateChart(chartName);
                 }
             });
             
-            this.charts = {};
-            this.createAllCharts();
-            
             console.log('📊 Gráficos atualizados com sucesso!');
         } catch (error) {
-            console.error('Erro ao atualizar gráficos:', error);
+            console.error('❌ Erro ao atualizar gráficos:', error);
         }
     }
 
@@ -667,6 +737,22 @@ class ProductivityCharts {
         } catch (error) {
             console.error(`Erro ao atualizar gráfico ${chartName}:`, error);
         }
+    }
+
+    // ===== DEBUG E VERIFICAÇÃO =====
+    debugCharts() {
+        console.log('🔍 Debug dos gráficos:');
+        console.log('📊 Total de gráficos:', Object.keys(this.charts).length);
+        console.log('📋 Gráficos disponíveis:', Object.keys(this.charts));
+        
+        Object.keys(this.charts).forEach(chartName => {
+            const chart = this.charts[chartName];
+            if (chart) {
+                console.log(`✅ ${chartName}:`, chart);
+            } else {
+                console.log(`❌ ${chartName}: não encontrado`);
+            }
+        });
     }
 
     // ===== RESPONSIVIDADE =====
@@ -961,4 +1047,14 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     console.log('💻 Comandos de desenvolvimento disponíveis:');
     console.log('  - exportAllCharts() // Exportar todos os gráficos');
     console.log('  - updateCharts() // Atualizar todos os gráficos');
+    console.log('  - debugCharts() // Debug dos gráficos');
+    
+    // Adicionar comando global de debug
+    window.debugCharts = () => {
+        if (window.dashboard && window.dashboard.charts) {
+            window.dashboard.charts.debugCharts();
+        } else {
+            console.warn('Sistema de gráficos não inicializado.');
+        }
+    };
 }
