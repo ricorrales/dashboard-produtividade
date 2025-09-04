@@ -861,11 +861,33 @@ class ProductivityCharts {
 // Adicionar ao escopo global para acesso fácil
 window.ProductivityCharts = ProductivityCharts;
 
-// Auto-inicialização quando o dashboard estiver pronto
-document.addEventListener('DOMContentLoaded', () => {
-    // Aguardar inicialização do dashboard principal
-    setTimeout(() => {
+// ===== INICIALIZADOR ROBUSTO PARA GRÁFICOS =====
+class DashboardInitializer {
+    constructor() {
+        this.maxRetries = 5;
+        this.retryDelay = 1000;
+        this.currentRetry = 0;
+        this.init();
+    }
+
+    init() {
+        this.waitForDependencies();
+    }
+
+    waitForDependencies() {
         if (window.dashboard && typeof Chart !== 'undefined') {
+            this.initializeCharts();
+        } else if (this.currentRetry < this.maxRetries) {
+            this.currentRetry++;
+            console.warn(`⏳ Tentativa ${this.currentRetry}/${this.maxRetries} - Aguardando dependências...`);
+            setTimeout(() => this.waitForDependencies(), this.retryDelay);
+        } else {
+            console.error('❌ Falha ao inicializar gráficos após múltiplas tentativas');
+        }
+    }
+
+    initializeCharts() {
+        try {
             window.dashboard.charts = new ProductivityCharts(window.dashboard);
             
             // Integrar com sistema de refresh do dashboard
@@ -901,12 +923,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
             
-            console.log('🚀 Charts.js integrado com sucesso ao dashboard!');
-        } else {
-            console.warn('⚠️ Dashboard principal ou Chart.js não encontrado. Aguardando...');
+            console.log('🚀 Charts.js integrado com sucesso!');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar gráficos:', error);
         }
-    }, 1000);
-});
+    }
+}
+
+// Inicializar quando DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        new DashboardInitializer();
+    });
+} else {
+    new DashboardInitializer();
+}
 
 // Adicionar comando global para desenvolvedores
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
