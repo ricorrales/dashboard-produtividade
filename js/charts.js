@@ -4,6 +4,15 @@
  * Responsivo e otimizado para o tema escuro
  */
 
+// Verificar se Chart.js está disponível
+if (typeof Chart === 'undefined') {
+    console.error('❌ Chart.js não está carregado! Verifique se o CDN está funcionando.');
+    console.error('🔗 CDN esperado: https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js');
+} else {
+    console.log('✅ Chart.js carregado com sucesso!');
+    console.log('📊 Versão:', Chart.version);
+}
+
 class ProductivityCharts {
     constructor(dashboard) {
         this.dashboard = dashboard;
@@ -950,8 +959,8 @@ window.ProductivityCharts = ProductivityCharts;
 // ===== INICIALIZADOR ROBUSTO PARA GRÁFICOS =====
 class DashboardInitializer {
     constructor() {
-        this.maxRetries = 5;
-        this.retryDelay = 1000;
+        this.maxRetries = 10;
+        this.retryDelay = 500;
         this.currentRetry = 0;
         this.init();
     }
@@ -961,68 +970,111 @@ class DashboardInitializer {
     }
 
     waitForDependencies() {
+        console.log('🔍 Verificando dependências...');
+        console.log('📊 Dashboard:', typeof window.dashboard);
+        console.log('📈 Chart.js:', typeof Chart);
+        
         if (window.dashboard && typeof Chart !== 'undefined') {
+            console.log('✅ Todas as dependências encontradas!');
             this.initializeCharts();
         } else if (this.currentRetry < this.maxRetries) {
             this.currentRetry++;
             console.warn(`⏳ Tentativa ${this.currentRetry}/${this.maxRetries} - Aguardando dependências...`);
+            console.log('📊 Dashboard status:', window.dashboard ? 'OK' : 'NÃO ENCONTRADO');
+            console.log('📈 Chart.js status:', typeof Chart !== 'undefined' ? 'OK' : 'NÃO ENCONTRADO');
             setTimeout(() => this.waitForDependencies(), this.retryDelay);
         } else {
             console.error('❌ Falha ao inicializar gráficos após múltiplas tentativas');
+            console.error('🔍 Última verificação:');
+            console.error('  - Dashboard:', window.dashboard);
+            console.error('  - Chart.js:', typeof Chart);
+            console.error('  - DOM Ready:', document.readyState);
         }
     }
 
     initializeCharts() {
         try {
+            console.log('🔧 Inicializando sistema de gráficos...');
+            console.log('📊 Dashboard encontrado:', window.dashboard);
+            console.log('📈 Chart.js disponível:', typeof Chart !== 'undefined');
+            
+            // Verificar se o dashboard tem os métodos necessários
+            if (!window.dashboard.tasks || !window.dashboard.workingSessions) {
+                console.warn('⚠️ Dashboard não tem dados necessários, aguardando...');
+                setTimeout(() => this.initializeCharts(), 1000);
+                return;
+            }
+            
             window.dashboard.charts = new ProductivityCharts(window.dashboard);
             
             // Integrar com sistema de refresh do dashboard
             const originalRefresh = window.dashboard.refreshDashboard;
-            window.dashboard.refreshDashboard = function() {
-                originalRefresh.call(this);
-                if (this.charts) {
-                    setTimeout(() => this.charts.updateAllCharts(), 500);
-                }
-            };
+            if (originalRefresh) {
+                window.dashboard.refreshDashboard = function() {
+                    originalRefresh.call(this);
+                    if (this.charts) {
+                        setTimeout(() => this.charts.updateAllCharts(), 500);
+                    }
+                };
+            }
             
             // Integrar com sistema de métricas
             const originalUpdateMetrics = window.dashboard.updateMetrics;
-            window.dashboard.updateMetrics = function() {
-                originalUpdateMetrics.call(this);
-                if (this.charts) {
-                    setTimeout(() => {
-                        this.charts.updateChart('weeklyProgress');
-                        this.charts.updateChart('categoryDistribution');
-                    }, 100);
-                }
-            };
+            if (originalUpdateMetrics) {
+                window.dashboard.updateMetrics = function() {
+                    originalUpdateMetrics.call(this);
+                    if (this.charts) {
+                        setTimeout(() => {
+                            this.charts.updateChart('weeklyProgress');
+                            this.charts.updateChart('categoryDistribution');
+                        }, 100);
+                    }
+                };
+            }
             
             // Integrar com sistema de tarefas
             const originalRenderTasks = window.dashboard.renderTasks;
-            window.dashboard.renderTasks = function() {
-                originalRenderTasks.call(this);
-                if (this.charts) {
-                    setTimeout(() => {
-                        this.charts.updateChart('taskCompletion');
-                        this.charts.updateChart('productivity');
-                    }, 100);
-                }
-            };
+            if (originalRenderTasks) {
+                window.dashboard.renderTasks = function() {
+                    originalRenderTasks.call(this);
+                    if (this.charts) {
+                        setTimeout(() => {
+                            this.charts.updateChart('taskCompletion');
+                            this.charts.updateChart('productivity');
+                        }, 100);
+                    }
+                };
+            }
             
             console.log('🚀 Charts.js integrado com sucesso!');
+            console.log('📊 Sistema pronto para uso');
         } catch (error) {
             console.error('❌ Erro ao inicializar gráficos:', error);
+            console.error('🔍 Stack trace:', error.stack);
         }
     }
 }
 
 // Inicializar quando DOM estiver pronto
+function initializeChartsSystem() {
+    console.log('🚀 Iniciando sistema de gráficos...');
+    console.log('📊 Estado do DOM:', document.readyState);
+    console.log('📈 Chart.js disponível:', typeof Chart !== 'undefined');
+    
+    // Aguardar um pouco mais para garantir que tudo esteja carregado
+    setTimeout(() => {
+        new DashboardInitializer();
+    }, 1000);
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        new DashboardInitializer();
+        console.log('📋 DOM carregado, aguardando para inicializar gráficos...');
+        setTimeout(initializeChartsSystem, 500);
     });
 } else {
-    new DashboardInitializer();
+    console.log('📋 DOM já carregado, inicializando gráficos...');
+    initializeChartsSystem();
 }
 
 // Adicionar comando global para desenvolvedores
@@ -1056,5 +1108,16 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         } else {
             console.warn('Sistema de gráficos não inicializado.');
         }
+    };
+    
+    // Adicionar comando para verificar dependências
+    window.checkDependencies = () => {
+        console.log('🔍 Verificação de dependências:');
+        console.log('📊 Dashboard:', typeof window.dashboard);
+        console.log('📈 Chart.js:', typeof Chart);
+        console.log('🌐 DOM Ready:', document.readyState);
+        console.log('📋 Dashboard instance:', window.dashboard);
+        console.log('📊 Dashboard tasks:', window.dashboard?.tasks?.length || 'N/A');
+        console.log('⏱️ Dashboard sessions:', window.dashboard?.workingSessions?.length || 'N/A');
     };
 }
