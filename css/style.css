@@ -1933,5 +1933,393 @@ button {
 }
 
 /* ==========================================================================
+   Animações e Transições Aprimoradas
+   ========================================================================== */
+
+/* Animações de entrada para cards de métricas */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+/* Aplicar animações aos elementos */
+.metric-card {
+    animation: fadeInUp 0.6s ease-out forwards;
+    animation-delay: calc(var(--animation-order, 0) * 0.1s);
+}
+
+.metric-card:nth-child(1) { --animation-order: 0; }
+.metric-card:nth-child(2) { --animation-order: 1; }
+.metric-card:nth-child(3) { --animation-order: 2; }
+.metric-card:nth-child(4) { --animation-order: 3; }
+
+.task-card {
+    animation: slideInLeft 0.5s ease-out forwards;
+    animation-delay: calc(var(--animation-order, 0) * 0.05s);
+}
+
+.task-card:nth-child(1) { --animation-order: 0; }
+.task-card:nth-child(2) { --animation-order: 1; }
+.task-card:nth-child(3) { --animation-order: 2; }
+.task-card:nth-child(4) { --animation-order: 3; }
+.task-card:nth-child(5) { --animation-order: 4; }
+
+/* Melhorias nas transições de hover */
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-success {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-danger:hover,
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover::before,
+.btn-secondary:hover::before,
+.btn-danger:hover::before,
+.btn-success:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before,
+.btn-secondary:hover::before,
+.btn-danger:hover::before,
+.btn-success:hover::before {
+    left: 100%;
+}
+
+/* Animação de loading aprimorada */
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Efeito de shimmer para cards vazios */
+.card-placeholder {
+    background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Animações para modais */
+.modal-overlay {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Animações para notificações */
+.notification-toast {
+    animation: slideInRight 0.4s ease-out, slideOutRight 0.4s ease-in 4.6s forwards;
+}
+
+@keyframes slideOutRight {
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
+   NOVAS ANIMAÇÕES E MICRO-INTERAÇÕES
+   ========================================================================== */
+
+/* Animações de entrada para cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40%, 43% {
+        transform: translateY(-8px);
+    }
+    70% {
+        transform: translateY(-4px);
+    }
+}
+
+/* Aplicando animações aos elementos */
+.metric-card {
+    animation: fadeInUp 0.6s ease-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.metric-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.task-card {
+    animation: slideInLeft 0.5s ease-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.task-card:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-lg), 0 0 25px rgba(139, 92, 246, 0.15);
+}
+
+.btn-primary, .btn-secondary, .btn-success, .btn-warning, .btn-danger {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active, .btn-secondary:active, .btn-success:active, .btn-warning:active, .btn-danger:active {
+    transform: translateY(0);
+    transition: all 0.1s;
+}
+
+/* Efeito de ripple nos botões */
+.btn-primary::before, .btn-secondary::before, .btn-success::before, .btn-warning::before, .btn-danger::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:active::before, .btn-secondary:active::before, .btn-success:active::before, .btn-warning:active::before, .btn-danger:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Animações para o header */
+.header {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.dashboard-title {
+    transition: all 0.3s ease;
+}
+
+.dashboard-title:hover {
+    transform: scale(1.02);
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+/* Animações para gráficos */
+.chart-container {
+    animation: fadeInUp 0.7s ease-out;
+    transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+    transform: scale(1.01);
+}
+
+/* Animações para filtros */
+.filter-btn {
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.filter-btn.active {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Animações para modais */
+.modal {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.modal-content {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+/* Animações para notificações */
+.notification {
+    animation: slideInLeft 0.4s ease-out;
+}
+
+.notification.success {
+    animation: slideInLeft 0.4s ease-out, pulse 2s ease-in-out infinite;
+}
+
+/* Animações para loading */
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animações para métricas em tempo real */
+.metric-value {
+    transition: all 0.3s ease;
+}
+
+.metric-value.updating {
+    animation: pulse 0.5s ease-in-out;
+}
+
+/* Animações para tarefas completadas */
+.task-card.completed {
+    animation: fadeInUp 0.5s ease-out;
+    transition: all 0.4s ease;
+}
+
+.task-card.completed:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+}
+
+/* Animações para o timer de trabalho */
+.work-timer {
+    animation: fadeInUp 0.6s ease-out;
+    transition: all 0.3s ease;
+}
+
+.work-timer.active {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Animações para elementos de progresso */
+.progress-bar {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-bar-fill {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+/* ==========================================================================
    Fim do CSS - Dashboard Produtividade
    ========================================================================== */
