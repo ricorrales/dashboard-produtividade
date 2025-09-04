@@ -63,7 +63,7 @@
 
 /* Estabilizar métricas que estão aparecendo e sumindo */
 .metric-card {
-    display: block !important;
+    display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
     position: relative !important;
@@ -77,10 +77,14 @@
     flex-shrink: 0 !important;
     box-sizing: border-box !important;
     
-    /* Evitar animações que causam problemas */
+    /* IMPORTANTE: Desabilitar animações problemáticas */
     animation: none !important;
+    animation-fill-mode: none !important;
     transition: none !important;
     transform: none !important;
+    
+    /* Forçar posição final da animação */
+    transform: translateY(0) !important;
 }
 
 .metrics-grid {
@@ -94,6 +98,8 @@
 
 /* Estabilizar elementos de texto das métricas */
 .metric-value,
+.metric-content,
+.metric-icon,
 #tasks-completed,
 #productive-hours,
 #goals-achieved,
@@ -103,6 +109,12 @@
     opacity: 1 !important;
     color: #f8fafc !important;
     font-weight: bold !important;
+    
+    /* Desabilitar animações em elementos filhos também */
+    animation: none !important;
+    animation-fill-mode: none !important;
+    transition: none !important;
+    transform: none !important;
 }
 
 /* Debug visual para métricas */
