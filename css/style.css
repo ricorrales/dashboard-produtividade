@@ -105,6 +105,10 @@ html {
     scroll-behavior: smooth;
 }
 
+html, body {
+    overflow-x: hidden;
+}
+
 body {
     font-family: var(--font-family);
     background: var(--bg-primary);
@@ -126,10 +130,18 @@ body {
     display: grid;
     grid-template-rows: auto 1fr;
     min-height: 100vh;
-    padding: var(--space-4);
-    gap: var(--space-6);
+    padding: 1rem;
+    gap: 1rem;
     max-width: 1400px;
     margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Prevenir overflow em todos os elementos filhos */
+.dashboard-container * {
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -247,7 +259,8 @@ body {
 .metrics-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-4);
+    gap: 1rem;
+    width: 100%;
 }
 
 .metric-card {
@@ -324,6 +337,8 @@ body {
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
     margin-bottom: var(--space-2);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .metric-change {
@@ -355,7 +370,8 @@ body {
 .charts-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-6);
+    gap: 1rem;
+    width: 100%;
 }
 
 .chart-container {
@@ -513,6 +529,8 @@ body {
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
     margin-bottom: var(--space-1);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .task-description {
@@ -861,13 +879,32 @@ body {
 }
 
 /* ==========================================================================
-   Responsive Design - Tablet (768px+)
+   Responsive Design - Mobile First Breakpoints
    ========================================================================== */
 
+/* Tablet pequeno (480px+) */
+@media (min-width: 480px) {
+    .dashboard-container {
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .header-actions {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+/* Tablet (768px+) */
 @media (min-width: 768px) {
     .dashboard-container {
-        padding: var(--space-6);
-        gap: var(--space-8);
+        padding: 2rem;
+        gap: 2rem;
     }
     
     .header-content {
@@ -887,12 +924,13 @@ body {
     }
     
     .metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-6);
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
     }
     
     .charts-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
     }
     
     .tasks-header {
@@ -1519,33 +1557,84 @@ button {
    Responsividade Avançada
    ========================================================================== */
 
-/* Para telas muito pequenas (< 480px) */
+/* ==========================================================================
+   Mobile Otimizations (< 480px)
+   ========================================================================== */
+
 @media (max-width: 479px) {
     .dashboard-container {
-        padding: var(--space-3);
-        gap: var(--space-4);
+        padding: 0.75rem;
+        gap: 1rem;
     }
     
     .header {
-        padding: var(--space-4);
+        padding: 1rem;
+        margin: 0 -0.25rem;
     }
     
     .dashboard-title {
         font-size: var(--font-size-xl);
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
     }
     
     .metric-card {
-        padding: var(--space-4);
+        padding: 1rem;
         flex-direction: column;
         text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .metric-icon {
+        width: 50px;
+        height: 50px;
+        align-self: center;
     }
     
     .task-filters {
         flex-direction: column;
+        gap: 0.5rem;
     }
     
     .filter-btn {
         text-align: center;
+        padding: 0.75rem 1rem;
+    }
+    
+    .task-item {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .task-actions {
+        align-self: flex-end;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .charts-grid {
+        gap: 1rem;
+    }
+    
+    .chart-container {
+        padding: 1rem;
+    }
+    
+    /* Ajustes para modal em mobile */
+    .modal-content {
+        padding: 1rem;
+        margin: 1rem;
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.75rem;
     }
 }
 
