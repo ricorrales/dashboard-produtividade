@@ -893,8 +893,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.dashboard.showFeedback('Dados de teste adicionados!', 'success');
             };
 
+
             console.log('💻 Modo desenvolvimento ativo. Use addTestData() para adicionar dados de teste.');
         }
+    }
+
 
         console.log('🚀 Dashboard de Produtividade carregado com sucesso!');
     } catch (error) {

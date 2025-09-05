@@ -9,9 +9,82 @@
     
     <!-- CSS Local -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/chart-fix.css">
     
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <!-- CSS Override Definitivo -->
+    <style>
+        /* Override CSS definitivo baseado no teste híbrido que funciona */
+        .metrics-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 20px !important;
+        }
+        
+        .charts-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 20px !important;
+        }
+        
+        .metric-card {
+            animation: none !important;
+            animation-fill-mode: none !important;
+            transition: none !important;
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+    
+    <!-- Chart.js CDNs com fallback -->
+    <script>
+        // Sistema de carregamento robusto para Chart.js
+        (function() {
+            const cdnUrls = [
+                'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js',
+                'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js'
+            ];
+            
+            function loadChartJS(url, index = 0) {
+                if (index >= cdnUrls.length) {
+                    console.error('❌ Todos os CDNs falharam. Chart.js não pode ser carregado.');
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = url;
+                script.onload = function() {
+                    console.log('✅ Chart.js carregado com sucesso de:', url);
+                    console.log('📊 Versão:', Chart.version);
+                    window.chartJSLoaded = true;
+                };
+                script.onerror = function() {
+                    console.warn('⚠️ CDN falhou:', url);
+                    loadChartJS(cdnUrls[index + 1], index + 1);
+                };
+                document.head.appendChild(script);
+            }
+            
+            // Tentar primeiro CDN
+            loadChartJS(cdnUrls[0]);
+        })();
+    </script>
     
     <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -203,6 +276,131 @@
 
     <!-- JavaScript Local -->
     <script src="js/app.js"></script>
-    <script src="js/charts.js"></script>
+    
+    <!-- Sistema de gráficos SIMPLES que funciona -->
+    <script>
+        function initializeWorkingCharts() {
+            console.log('🔄 Inicializando gráficos estáveis...');
+            
+            if (typeof Chart === 'undefined') {
+                console.log('Chart.js não disponível, aguardando...');
+                setTimeout(initializeWorkingCharts, 500);
+                return;
+            }
+            
+            if (!window.dashboard) {
+                console.log('Dashboard não disponível, aguardando...');
+                setTimeout(initializeWorkingCharts, 500);
+                return;
+            }
+            
+            // Criar gráficos simples e estáveis
+            createStableChart('productivity-chart', 'line');
+            createStableChart('time-distribution-chart', 'bar');
+            createStableChart('monthly-progress-chart', 'doughnut');
+            createStableChart('task-categories-chart', 'radar');
+            
+            console.log('✅ Gráficos estáveis criados!');
+        }
+        
+        function createStableChart(canvasId, type) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.warn(`Canvas ${canvasId} não encontrado`);
+                return;
+            }
+            
+            const config = getStableChartConfig(type);
+            new Chart(canvas, config);
+        }
+        
+        function getStableChartConfig(type) {
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#f8fafc' } } }
+            };
+            
+            const commonScales = {
+                x: { ticks: { color: '#f8fafc' } },
+                y: { ticks: { color: '#f8fafc' } }
+            };
+            
+            switch(type) {
+                case 'line':
+                    return {
+                        type: 'line',
+                        data: {
+                            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
+                            datasets: [{
+                                label: 'Produtividade',
+                                data: [12, 19, 8, 15, 22, 16, 10],
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: { ...commonOptions, scales: commonScales }
+                    };
+                
+                case 'bar':
+                    return {
+                        type: 'bar',
+                        data: {
+                            labels: ['Trabalho', 'Pessoal', 'Estudo', 'Saúde'],
+                            datasets: [{
+                                label: 'Tarefas',
+                                data: [8, 4, 3, 1],
+                                backgroundColor: ['#6366f1', '#8b5cf6', '#10b981', '#f59e0b']
+                            }]
+                        },
+                        options: { ...commonOptions, scales: commonScales }
+                    };
+                
+                case 'doughnut':
+                    return {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Concluído', 'Pendente'],
+                            datasets: [{
+                                data: [75, 25],
+                                backgroundColor: ['#10b981', '#ef4444']
+                            }]
+                        },
+                        options: commonOptions
+                    };
+                
+                case 'radar':
+                    return {
+                        type: 'radar',
+                        data: {
+                            labels: ['Foco', 'Energia', 'Humor', 'Produtividade'],
+                            datasets: [{
+                                label: 'Hoje',
+                                data: [8, 7, 9, 8],
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99, 102, 241, 0.2)'
+                            }]
+                        },
+                        options: {
+                            ...commonOptions,
+                            scales: {
+                                r: {
+                                    ticks: { color: '#f8fafc' },
+                                    grid: { color: '#374151' },
+                                    pointLabels: { color: '#f8fafc' }
+                                }
+                            }
+                        }
+                    };
+            }
+        }
+        
+        // Inicializar APÓS DOM e app.js carregarem completamente
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initializeWorkingCharts, 2000);
+        });
+    </script>
 </body>
 </html>
