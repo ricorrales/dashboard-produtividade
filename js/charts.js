@@ -3,29 +3,10 @@
  * Versão corrigida que evita problemas de inicialização
  */
 
-// Função simples para verificar se Chart.js está disponível
-function isChartJSReady() {
-    return typeof Chart !== 'undefined';
-}
+// Verificação imediata de Chart.js
+if (typeof Chart === 'undefined') {
+    console.error('❌ Chart.js não está disponível! Verifique a conexão com internet.');
 
-// Aguardar Chart.js de forma simples
-function waitForChartJS(callback, maxTries = 50) {
-    let tries = 0;
-    
-    function check() {
-        tries++;
-        
-        if (isChartJSReady()) {
-            console.log('✅ Chart.js pronto! Versão:', Chart.version);
-            callback();
-        } else if (tries < maxTries) {
-            setTimeout(check, 200);
-        } else {
-            console.error('❌ Chart.js não carregou após', maxTries, 'tentativas');
-        }
-    }
-    
-    check();
 }
 
 class ProductivityCharts {
@@ -39,25 +20,22 @@ class ProductivityCharts {
     }
 
     init() {
-        try {
-            this.setupChartDefaults();
-            
-            // Aguardar um pouco para garantir que o DOM está pronto
-            setTimeout(() => {
-                this.createAllCharts();
-                console.log('✅ Sistema de gráficos inicializado com sucesso!');
-            }, 500);
-            
-        } catch (error) {
-            console.error('❌ Erro ao inicializar gráficos:', error);
+        if (!this.setupChartDefaults()) {
+            console.error('❌ Falha ao configurar Chart.js - sistema de gráficos desabilitado');
+            return;
         }
+        
+        this.createAllCharts();
+        this.setupResizeHandler();
+        
+        console.log('📊 Sistema de gráficos inicializado!');
     }
 
     setupChartDefaults() {
         // Verificar se Chart.js está disponível
         if (typeof Chart === 'undefined') {
-            console.warn('⚠️ Chart.js não encontrado. Gráficos não serão carregados.');
-            return;
+            console.error('❌ Chart.js não encontrado! Verifique se foi carregado corretamente.');
+            return false;
         }
 
         // Configurar padrões globais do Chart.js para o tema escuro
@@ -75,6 +53,8 @@ class ProductivityCharts {
         Chart.defaults.elements.point.hoverRadius = 6;
         Chart.defaults.elements.line.borderWidth = 3;
         Chart.defaults.elements.line.tension = 0.4;
+        
+        return true;
     }
 
     getThemeColors() {
@@ -90,32 +70,104 @@ class ProductivityCharts {
         };
     }
 
+    getChartDefaults() {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            aspectRatio: 2,
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        color: this.colors.textMuted,
+                        font: {
+                            size: 11,
+                            weight: '500'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: this.colors.text,
+                    bodyColor: this.colors.textMuted,
+                    borderColor: this.colors.border,
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 12,
+                    displayColors: true,
+                    boxWidth: 8,
+                    boxHeight: 8
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.03)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: this.colors.textMuted,
+                        font: {
+                            size: 10,
+                            weight: '500'
+                        }
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.03)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: this.colors.textMuted,
+                        font: {
+                            size: 10,
+                            weight: '500'
+                        }
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    backgroundColor: this.colors.primary,
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverBackgroundColor: this.colors.secondary,
+                    hoverBorderWidth: 3
+                }
+            }
+        };
+    }
+
+    // ===== CRIAÇÃO DOS GRÁFICOS =====
     createAllCharts() {
-        // Verificar se Chart.js está disponível
+        // Verificar novamente se Chart.js está disponível
         if (typeof Chart === 'undefined') {
-            console.warn('⚠️ Chart.js não carregado. Pulando criação de gráficos.');
+            console.error('❌ Chart.js não disponível durante criação dos gráficos');
+            this.dashboard?.showFeedback('Chart.js não encontrado.', 'error');
             return;
         }
 
         try {
-            console.log('🔄 Criando gráficos...');
-            
-            // Aguardar um pouco para garantir que o DOM esteja pronto
-            setTimeout(() => {
-                this.createProductivityChart();
-                this.createTaskCompletionChart();
-                this.createWeeklyProgressChart();
-                this.createCategoryDistributionChart();
-                
-                console.log('✅ Todos os gráficos criados com sucesso!');
-                
-                // Verificar se todos os gráficos foram criados
-                const chartCount = Object.keys(this.charts).length;
-                console.log(`📊 Total de gráficos criados: ${chartCount}`);
-                
-                // Forçar redraw dos gráficos
-                this.updateAllCharts();
-            }, 100);
+            this.createProductivityChart();
+            this.createTaskCompletionChart();
+            this.createWeeklyProgressChart();
+            this.createCategoryDistributionChart();
+            console.log('✅ Todos os gráficos criados com sucesso!');
         } catch (error) {
             console.error('❌ Erro ao criar gráficos:', error);
         }
@@ -497,7 +549,125 @@ class ProductivityCharts {
             
             console.log('📊 Gráficos atualizados com sucesso!');
         } catch (error) {
-            console.error('❌ Erro ao atualizar gráficos:', error);
+            console.error('Erro ao atualizar gráficos:', error);
+        }
+    }
+
+    updateChart(chartName) {
+        if (!this.charts[chartName]) return;
+
+        try {
+            let newData;
+            
+            switch (chartName) {
+                case 'productivity':
+                    newData = this.getProductivityData();
+                    this.charts.productivity.data.labels = newData.labels;
+                    this.charts.productivity.data.datasets[0].data = newData.sessions;
+                    this.charts.productivity.data.datasets[1].data = newData.tasksCreated;
+                    break;
+                    
+                case 'taskCompletion':
+                    newData = this.getTaskCompletionData();
+                    this.charts.taskCompletion.data.labels = newData.labels;
+                    this.charts.taskCompletion.data.datasets[0].data = newData.completed;
+                    this.charts.taskCompletion.data.datasets[1].data = newData.created;
+                    break;
+                    
+                case 'weeklyProgress':
+                    newData = this.getWeeklyProgressData();
+                    this.charts.weeklyProgress.data.datasets[0].data = [
+                        newData.completed, 
+                        newData.inProgress, 
+                        newData.pending
+                    ];
+                    break;
+                    
+                case 'categoryDistribution':
+                    newData = this.getCategoryDistributionData();
+                    this.charts.categoryDistribution.data.datasets[0].data = newData.total;
+                    this.charts.categoryDistribution.data.datasets[1].data = newData.completed;
+                    break;
+            }
+            
+            this.charts[chartName].update('active');
+        } catch (error) {
+            console.error(`Erro ao atualizar gráfico ${chartName}:`, error);
+        }
+    }
+
+    // ===== RESPONSIVIDADE =====
+    setupResizeHandler() {
+        let resizeTimeout;
+        
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                this.handleResize();
+            }, 250);
+        });
+    }
+
+    handleResize() {
+        Object.values(this.charts).forEach(chart => {
+            if (chart && typeof chart.resize === 'function') {
+                // Forçar redimensionamento com delay para garantir que o container esteja pronto
+                setTimeout(() => {
+                    chart.resize();
+                    chart.update('none'); // Update sem animação para melhor performance
+                }, 100);
+            }
+        });
+    }
+
+    // ===== CONFIGURAÇÕES RESPONSIVAS =====
+    getResponsiveConfig(chartType = 'default') {
+        const isMobile = window.innerWidth < 768;
+        const isTablet = window.innerWidth < 1024;
+        
+        const responsiveConfig = {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: !isMobile || chartType === 'doughnut',
+                    position: isMobile ? 'bottom' : 'bottom',
+                    labels: {
+                        padding: isMobile ? 10 : 20,
+                        font: {
+                            size: isMobile ? 10 : 11
+                        },
+                        boxWidth: isMobile ? 12 : 16
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    titleFont: {
+                        size: isMobile ? 11 : 12
+                    },
+                    bodyFont: {
+                        size: isMobile ? 10 : 11
+                    },
+                    padding: isMobile ? 8 : 12
+                }
+            }
+        };
+
+        if (chartType === 'radar') {
+            responsiveConfig.scales = {
+                r: {
+                    pointLabels: {
+                        font: {
+                            size: isMobile ? 9 : 11
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: isMobile ? 8 : 9
+                        }
+                    }
+                }
+            };
         }
     }
 
@@ -515,34 +685,55 @@ class ProductivityCharts {
     }
 }
 
-// ===== INICIALIZAÇÃO SEGURA =====
-function initializeChartsWhenReady() {
-    // Verificar se as dependências estão disponíveis
-    if (window.dashboard && typeof Chart !== 'undefined') {
+// ===== INICIALIZAÇÃO E INTEGRAÇÃO =====
+// Adicionar ao escopo global para acesso fácil
+window.ProductivityCharts = ProductivityCharts;
+
+// ===== INICIALIZADOR ROBUSTO PARA GRÁFICOS =====
+class DashboardInitializer {
+    constructor() {
+        this.maxRetries = 10;
+        this.retryDelay = 500;
+        this.currentRetry = 0;
+        this.init();
+    }
+
+    init() {
+        this.waitForDependencies();
+    }
+
+    waitForDependencies() {
+        const chartAvailable = typeof Chart !== 'undefined';
+        const dashboardAvailable = window.dashboard;
+        
+        if (chartAvailable && dashboardAvailable) {
+            console.log('✅ Todas as dependências carregadas - inicializando gráficos...');
+            this.initializeCharts();
+        } else if (this.currentRetry < this.maxRetries) {
+            this.currentRetry++;
+            const missing = [];
+            if (!chartAvailable) missing.push('Chart.js');
+            if (!dashboardAvailable) missing.push('Dashboard');
+            
+            console.warn(`⏳ Tentativa ${this.currentRetry}/${this.maxRetries} - Aguardando: ${missing.join(', ')}`);
+            setTimeout(() => this.waitForDependencies(), this.retryDelay);
+        } else {
+            console.error('❌ Falha ao inicializar gráficos após múltiplas tentativas');
+            console.error('Chart.js disponível:', typeof Chart !== 'undefined');
+            console.error('Dashboard disponível:', !!window.dashboard);
+        }
+    }
+
+    initializeCharts() {
         try {
             console.log('🔧 Inicializando sistema de gráficos...');
             
-            // Verificar se o dashboard tem os métodos necessários
-            if (!window.dashboard.tasks || !window.dashboard.workingSessions) {
-                console.warn('⚠️ Dashboard não tem dados necessários, aguardando...');
-                setTimeout(() => this.initializeCharts(), 1000);
-                return;
-            }
-
-            // Adicionar dados de teste se não houver dados
-            if (window.dashboard.tasks.length === 0) {
-                console.log('📊 Adicionando dados de teste para demonstração...');
-                if (typeof window.addTestData === 'function') {
-                    window.addTestData();
-                } else {
-                    console.warn('⚠️ Função addTestData não encontrada, criando dados básicos...');
-                    // Criar dados básicos diretamente
-                    window.dashboard.createTask({
-                        title: 'Tarefa de Exemplo',
-                        description: 'Esta é uma tarefa de exemplo para demonstração',
-                        priority: 'medium',
-                        category: 'trabalho'
-                    });
+            // Integrar com sistema de refresh do dashboard
+            const originalRefresh = window.dashboard.refreshDashboard;
+            window.dashboard.refreshDashboard = function() {
+                originalRefresh.call(this);
+                if (this.charts) {
+                    setTimeout(() => this.charts.updateAllCharts(), 800);
                 }
             }
             

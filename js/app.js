@@ -27,33 +27,18 @@ class ProductivityDashboard {
 
     // ===== INICIALIZAÇÃO ROBUSTA =====
     init() {
-        try {
-            console.log('📋 Carregando dados salvos...');
-            this.loadFromStorage();
-            
-            console.log('🎯 Configurando event listeners...');
-            this.setupEventListeners();
-            
-            console.log('⏰ Iniciando relógio...');
-            this.updateClock();
-            setInterval(() => this.updateClock(), 1000);
-            
-            console.log('📊 Calculando métricas...');
-            this.updateMetrics();
-            
-            console.log('📝 Renderizando tarefas...');
-            this.renderTasks();
-            
-            console.log('⏱️ Configurando timer...');
-            this.updateWorkTimer();
-            this.createWorkTimerControls();
-            
-            console.log('✅ Dashboard inicializado com sucesso!');
-            this.showFeedback('Dashboard carregado com sucesso!', 'success');
-        } catch (error) {
-            console.error('❌ Erro na inicialização:', error);
-            this.showFeedback('Erro ao carregar dashboard. Verifique o console.', 'error');
-        }
+        this.loadFromStorage();
+        this.setupEventListeners();
+        this.updateClock();
+        this.updateMetrics();
+        this.renderTasks();
+        this.updateWorkTimer();
+        this.createWorkTimerControls();
+
+        // Iniciar relógio
+        setInterval(() => this.updateClock(), 1000);
+
+        console.log('📊 Dashboard de Produtividade iniciado!');
     }
 
     // ===== EVENT LISTENERS SEGUROS =====
@@ -758,14 +743,175 @@ class ProductivityDashboard {
         return colors[type] || colors.info;
     }
 
-    getFeedbackIcon(type) {
-        const icons = {
-            success: 'check-circle',
-            error: 'exclamation-circle',
-            warning: 'exclamation-triangle',
-            info: 'info-circle'
-        };
-        return icons[type] || 'info-circle';
+    animateNewTask(taskId) {
+        const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+        if (taskElement) {
+            taskElement.classList.add('bounce-in');
+        }
+    }
+
+    animateTaskCompletion(taskId) {
+        const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+        if (taskElement) {
+            taskElement.classList.add('success-check');
+
+            // Efeito de confetti
+            this.createConfetti(taskElement);
+        }
+    }
+
+    createConfetti(element) {
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        for (let i = 0; i < 10; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+                position: fixed;
+                left: ${centerX}px;
+                top: ${centerY}px;
+                width: 8px;
+                height: 8px;
+                background: hsl(${Math.random() * 360}, 70%, 60%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 10000;
+            `;
+
+            document.body.appendChild(confetti);
+
+            // Animação do confetti
+            const animation = confetti.animate([
+                {
+                    transform: 'translate(0, 0) rotate(0deg)',
+                    opacity: 1
+                },
+                {
+                    transform: `translate(${(Math.random() - 0.5) * 200}px, ${Math.random() * 100 + 50}px) rotate(${Math.random() * 360}deg)`,
+                    opacity: 0
+                }
+            ], {
+                duration: 1000,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            });
+
+            animation.addEventListener('finish', () => confetti.remove());
+        }
+    }
+
+    showLoadingAnimation() {
+        const sections = ['.metrics-section', '.charts-section', '.tasks-section'];
+
+        sections.forEach((selector, index) => {
+            const section = document.querySelector(selector);
+            if (section) {
+                // Aplicar apenas uma animação suave sem alterar opacidade
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
+                
+                setTimeout(() => {
+                    section.style.transform = 'translateY(0)';
+                    section.style.opacity = '1';
+                }, index * 150);
+            }
+        });
+    }
+
+    // ===== MODAL DE TAREFAS =====
+    openTaskModal() {
+        const modal = document.getElementById('task-modal');
+        if (modal) {
+            modal.classList.add('active');
+            const titleInput = document.getElementById('task-title-input');
+            if (titleInput) {
+                titleInput.focus();
+            }
+        }
+    }
+
+    closeTaskModal() {
+        const modal = document.getElementById('task-modal');
+        if (modal) {
+            modal.classList.remove('active');
+
+            // Reset do formulário
+            const form = document.getElementById('task-form');
+            if (form) {
+                form.reset();
+            }
+
+            // Reset do modo de edição
+            if (modal.dataset.editingTaskId) {
+                delete modal.dataset.editingTaskId;
+                modal.querySelector('h3').textContent = 'Nova Tarefa';
+            }
+        }
+    }
+
+    // ===== REFRESH DO DASHBOARD =====
+    refreshDashboard() {
+        const refreshBtn = document.querySelector('.btn-refresh');
+        if (refreshBtn) {
+            refreshBtn.classList.add('loading');
+            refreshBtn.disabled = true;
+        }
+
+        // Simular carregamento
+        setTimeout(() => {
+            this.updateMetrics();
+            this.renderTasks();
+            this.updateClock();
+            this.updateWorkTimer();
+
+            if (refreshBtn) {
+                refreshBtn.classList.remove('loading');
+                refreshBtn.disabled = false;
+            }
+            this.showFeedback('Dashboard atualizado!', 'success');
+        }, 1500);
+    }
+
+    // ===== ATALHOS DE TECLADO =====
+    handleKeyboardShortcuts(e) {
+        // Prevenir atalhos quando em campos de input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        // Ctrl/Cmd + N: Nova tarefa
+        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+            e.preventDefault();
+            this.openTaskModal();
+        }
+
+        // Escape: Fechar modal
+        if (e.key === 'Escape') {
+            this.closeTaskModal();
+        }
+
+        // Ctrl/Cmd + R: Refresh
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+            e.preventDefault();
+            this.refreshDashboard();
+        }
+
+        // Ctrl/Cmd + Shift + C: Limpar dados
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+            e.preventDefault();
+            this.clearStorage();
+        }
+
+        // Espaço: Start/Stop timer
+        if (e.code === 'Space' && !e.target.closest('.modal-overlay')) {
+            e.preventDefault();
+            if (this.currentSession) {
+                this.stopWorkSession();
+            } else {
+                this.startWorkSession();
+            }
+        }
+
     }
 
     // ===== UTILITÁRIOS =====
@@ -838,51 +984,57 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Inicializar dashboard
-        window.dashboard = new ProductivityDashboard();
+    // Inicializar dashboard
+    window.dashboard = new ProductivityDashboard();
 
-        // Adicionar funções globais para compatibilidade (CORRIGIDO)
-        window.refreshDashboard = () => window.dashboard?.refreshDashboard();
-        window.openTaskModal = () => window.dashboard?.openTaskModal();
-        window.closeTaskModal = () => window.dashboard?.closeTaskModal();
+    // Mostrar animação após tudo carregado
+    setTimeout(() => {
+        window.dashboard.showLoadingAnimation();
+    }, 300);
 
-        // Comando de teste para desenvolvimento
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            window.addTestData = () => {
-                const testTasks = [
-                    {
-                        title: 'Revisar código do projeto',
-                        description: 'Fazer code review das últimas alterações',
-                        priority: 'high',
-                        category: 'trabalho'
-                    },
-                    {
-                        title: 'Exercitar-se',
-                        description: '30 minutos de caminhada',
-                        priority: 'medium',
-                        category: 'saude'
-                    },
-                    {
-                        title: 'Estudar JavaScript',
-                        description: 'Completar curso online',
-                        priority: 'low',
-                        category: 'estudo'
-                    }
-                ];
+    // Verificar deadlines a cada 30 minutos
+    setInterval(() => {
+        window.dashboard.checkTaskDeadlines();
+    }, 30 * 60 * 1000);
 
-                testTasks.forEach(taskData => {
-                    const task = {
-                        id: window.dashboard.generateId(),
-                        ...taskData,
-                        completed: Math.random() > 0.5,
-                        createdAt: new Date().toISOString(),
-                        completedAt: null,
-                        deadline: ''
-                    };
+    // Adicionar comando de teste global (apenas para desenvolvimento)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        window.addTestData = () => {
+            const testTasks = [
+                {
+                    title: 'Revisar código do projeto',
+                    description: 'Fazer code review das últimas alterações',
+                    priority: 'high',
+                    category: 'trabalho'
+                },
+                {
+                    title: 'Exercitar-se',
+                    description: '30 minutos de caminhada',
+                    priority: 'medium',
+                    category: 'saude'
+                },
+                {
+                    title: 'Estudar JavaScript',
+                    description: 'Completar curso online',
+                    priority: 'low',
+                    category: 'estudo'
+                }
+            ];
 
-                    if (task.completed) {
-                        task.completedAt = new Date().toISOString();
-                    }
+            testTasks.forEach(taskData => {
+                const task = {
+                    id: window.dashboard.generateId(),
+                    ...taskData,
+                    completed: Math.random() > 0.5,
+                    createdAt: new Date().toISOString(),
+                    completedAt: null,
+                    deadline: ''
+                };
+
+                if (task.completed) {
+                    task.completedAt = new Date().toISOString();
+                }
+
 
                     window.dashboard.tasks.push(task);
                 });
