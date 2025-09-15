@@ -33,9 +33,6 @@ class ProductivityDashboard {
         // Iniciar relógio
         setInterval(() => this.updateClock(), 1000);
 
-        // Mostrar animação inicial
-        this.showLoadingAnimation();
-
         console.log('📊 Dashboard de Produtividade iniciado!');
     }
 
@@ -733,9 +730,14 @@ class ProductivityDashboard {
         sections.forEach((selector, index) => {
             const section = document.querySelector(selector);
             if (section) {
+                // Aplicar apenas uma animação suave sem alterar opacidade
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
+                
                 setTimeout(() => {
-                    section.classList.add('fade-in');
-                }, index * 200);
+                    section.style.transform = 'translateY(0)';
+                    section.style.opacity = '1';
+                }, index * 150);
             }
         });
     }
@@ -1254,6 +1256,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar dashboard
     window.dashboard = new ProductivityDashboard();
+
+    // Mostrar animação após tudo carregado
+    setTimeout(() => {
+        window.dashboard.showLoadingAnimation();
+    }, 300);
 
     // Verificar deadlines a cada 30 minutos
     setInterval(() => {

@@ -4,6 +4,11 @@
  * Responsivo e otimizado para o tema escuro
  */
 
+// Verificação imediata de Chart.js
+if (typeof Chart === 'undefined') {
+    console.error('❌ Chart.js não está disponível! Verifique a conexão com internet.');
+}
+
 class ProductivityCharts {
     constructor(dashboard) {
         this.dashboard = dashboard;
@@ -16,7 +21,11 @@ class ProductivityCharts {
 
     // ===== INICIALIZAÇÃO =====
     init() {
-        this.setupChartDefaults();
+        if (!this.setupChartDefaults()) {
+            console.error('❌ Falha ao configurar Chart.js - sistema de gráficos desabilitado');
+            return;
+        }
+        
         this.createAllCharts();
         this.setupResizeHandler();
         
@@ -24,6 +33,12 @@ class ProductivityCharts {
     }
 
     setupChartDefaults() {
+        // Verificar se Chart.js está disponível
+        if (typeof Chart === 'undefined') {
+            console.error('❌ Chart.js não encontrado! Verifique se foi carregado corretamente.');
+            return false;
+        }
+
         // Configurar padrões globais do Chart.js para o tema escuro
         Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
         Chart.defaults.font.size = 12;
@@ -39,6 +54,8 @@ class ProductivityCharts {
         Chart.defaults.elements.point.hoverRadius = 6;
         Chart.defaults.elements.line.borderWidth = 3;
         Chart.defaults.elements.line.tension = 0.4;
+        
+        return true;
     }
 
     getThemeColors() {
@@ -67,6 +84,15 @@ class ProductivityCharts {
         return {
             responsive: true,
             maintainAspectRatio: false,
+            aspectRatio: 2,
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
+                }
+            },
             interaction: {
                 intersect: false,
                 mode: 'index'
@@ -139,11 +165,19 @@ class ProductivityCharts {
 
     // ===== CRIAÇÃO DOS GRÁFICOS =====
     createAllCharts() {
+        // Verificar novamente se Chart.js está disponível
+        if (typeof Chart === 'undefined') {
+            console.error('❌ Chart.js não disponível durante criação dos gráficos');
+            this.dashboard?.showFeedback('Chart.js não encontrado.', 'error');
+            return;
+        }
+
         try {
             this.createProductivityChart();
             this.createTaskCompletionChart();
             this.createWeeklyProgressChart();
             this.createCategoryDistributionChart();
+            console.log('✅ Todos os gráficos criados com sucesso!');
         } catch (error) {
             console.error('Erro ao criar gráficos:', error);
             this.dashboard?.showFeedback('Erro ao carregar gráficos.', 'error');
@@ -153,7 +187,10 @@ class ProductivityCharts {
     // ===== 1. GRÁFICO DE PRODUTIVIDADE SEMANAL (Commits/Sessões) =====
     createProductivityChart() {
         const canvas = document.getElementById('productivity-chart');
-        if (!canvas) return;
+        if (!canvas) {
+            console.warn('⚠️ Canvas productivity-chart não encontrado');
+            return;
+        }
 
         const ctx = canvas.getContext('2d');
         const data = this.getProductivityData();
@@ -684,7 +721,11 @@ class ProductivityCharts {
     handleResize() {
         Object.values(this.charts).forEach(chart => {
             if (chart && typeof chart.resize === 'function') {
-                chart.resize();
+                // Forçar redimensionamento com delay para garantir que o container esteja pronto
+                setTimeout(() => {
+                    chart.resize();
+                    chart.update('none'); // Update sem animação para melhor performance
+                }, 100);
             }
         });
     }
@@ -864,8 +905,8 @@ window.ProductivityCharts = ProductivityCharts;
 // ===== INICIALIZADOR ROBUSTO PARA GRÁFICOS =====
 class DashboardInitializer {
     constructor() {
-        this.maxRetries = 5;
-        this.retryDelay = 1000;
+        this.maxRetries = 10;
+        this.retryDelay = 500;
         this.currentRetry = 0;
         this.init();
     }
@@ -875,14 +916,24 @@ class DashboardInitializer {
     }
 
     waitForDependencies() {
-        if (window.dashboard && typeof Chart !== 'undefined') {
+        const chartAvailable = typeof Chart !== 'undefined';
+        const dashboardAvailable = window.dashboard;
+        
+        if (chartAvailable && dashboardAvailable) {
+            console.log('✅ Todas as dependências carregadas - inicializando gráficos...');
             this.initializeCharts();
         } else if (this.currentRetry < this.maxRetries) {
             this.currentRetry++;
-            console.warn(`⏳ Tentativa ${this.currentRetry}/${this.maxRetries} - Aguardando dependências...`);
+            const missing = [];
+            if (!chartAvailable) missing.push('Chart.js');
+            if (!dashboardAvailable) missing.push('Dashboard');
+            
+            console.warn(`⏳ Tentativa ${this.currentRetry}/${this.maxRetries} - Aguardando: ${missing.join(', ')}`);
             setTimeout(() => this.waitForDependencies(), this.retryDelay);
         } else {
             console.error('❌ Falha ao inicializar gráficos após múltiplas tentativas');
+            console.error('Chart.js disponível:', typeof Chart !== 'undefined');
+            console.error('Dashboard disponível:', !!window.dashboard);
         }
     }
 
@@ -895,7 +946,7 @@ class DashboardInitializer {
             window.dashboard.refreshDashboard = function() {
                 originalRefresh.call(this);
                 if (this.charts) {
-                    setTimeout(() => this.charts.updateAllCharts(), 500);
+                    setTimeout(() => this.charts.updateAllCharts(), 800);
                 }
             };
             
