@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Chart.js</title>
+</head>
+<body>
+    <h1>Teste Chart.js</h1>
+    <canvas id="test-chart" width="400" height="200"></canvas>
+    
+    <!-- Chart.js CDNs com fallback -->
+    <script>
+        // Sistema de carregamento robusto para Chart.js
+        (function() {
+            const cdnUrls = [
+                'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js',
+                'https://unpkg.com/chart.js@4.4.0/dist/chart.min.js'
+            ];
+            
+            function loadChartJS(url, index = 0) {
+                if (index >= cdnUrls.length) {
+                    console.error('❌ Todos os CDNs falharam. Chart.js não pode ser carregado.');
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = url;
+                script.onload = function() {
+                    console.log('✅ Chart.js carregado com sucesso de:', url);
+                    console.log('📊 Versão:', Chart.version);
+                    window.chartJSLoaded = true;
+                    testChart();
+                };
+                script.onerror = function() {
+                    console.warn('⚠️ CDN falhou:', url);
+                    loadChartJS(cdnUrls[index + 1], index + 1);
+                };
+                document.head.appendChild(script);
+            }
+            
+            function testChart() {
+                if (typeof Chart !== 'undefined') {
+                    const ctx = document.getElementById('test-chart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+                            datasets: [{
+                                label: 'Teste',
+                                data: [12, 19, 3, 5],
+                                borderColor: 'rgb(75, 192, 192)',
+                                tension: 0.1
+                            }]
+                        }
+                    });
+                    console.log('✅ Gráfico criado com sucesso!');
+                } else {
+                    console.error('❌ Chart.js não disponível para criar gráfico');
+                }
+            }
+            
+            // Tentar primeiro CDN
+            loadChartJS(cdnUrls[0]);
+        })();
+    </script>
+</body>
+</html>
