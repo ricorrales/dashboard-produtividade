@@ -1035,19 +1035,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     task.completedAt = new Date().toISOString();
                 }
 
+                window.dashboard.tasks.push(task);
+            });
 
-                    window.dashboard.tasks.push(task);
-                });
+            window.dashboard.saveToStorage();
+            window.dashboard.renderTasks();
+            window.dashboard.updateMetrics();
+            window.dashboard.showFeedback('Dados de teste adicionados!', 'success');
+        };
 
-                window.dashboard.saveToStorage();
-                window.dashboard.renderTasks();
-                window.dashboard.updateMetrics();
-                window.dashboard.showFeedback('Dados de teste adicionados!', 'success');
-            };
-
-
-            console.log('💻 Modo desenvolvimento ativo. Use addTestData() para adicionar dados de teste.');
-        }
+        console.log('💻 Modo desenvolvimento ativo. Use addTestData() para adicionar dados de teste.');
     }
 
 

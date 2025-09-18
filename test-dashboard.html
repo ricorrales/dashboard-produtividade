@@ -99,10 +99,20 @@
             appScript.src = 'js/app.js';
             appScript.onload = function() {
                 console.log('✅ app.js carregado');
-                
-                // Carregar charts.js
+
+                // Inicializar o Dashboard manualmente, pois DOMContentLoaded já ocorreu
+                try {
+                    if (!window.dashboard && typeof ProductivityDashboard === 'function') {
+                        window.dashboard = new ProductivityDashboard();
+                        console.log('✅ Dashboard inicializado no ambiente de teste');
+                    }
+                } catch (e) {
+                    console.error('❌ Erro ao inicializar o Dashboard no teste:', e);
+                }
+
+                // Carregar charts (versão simples/estável)
                 const chartsScript = document.createElement('script');
-                chartsScript.src = 'js/charts.js';
+                chartsScript.src = 'js/charts-simple.js';
                 chartsScript.onload = function() {
                     console.log('✅ charts.js carregado');
                     setTimeout(() => {
