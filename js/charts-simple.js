@@ -254,6 +254,9 @@ class ProductivityCharts {
     }
 }
 
+// Disponibilizar no escopo global para diagnósticos e uso externo
+window.ProductivityCharts = window.ProductivityCharts || ProductivityCharts;
+
 // Função única de inicialização
 function initializeCharts() {
     // Verificar se já foi inicializado

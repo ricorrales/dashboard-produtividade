@@ -242,8 +242,8 @@
         </div>
     </div>
 
-    <!-- Chart.js CDN - Versão Estável -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js CDN - Versão UMD (garante window.Chart) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     
     <!-- Verificação de Chart.js -->
     <script>
@@ -252,7 +252,7 @@
             if (typeof Chart === 'undefined') {
                 console.error('❌ Chart.js falhou ao carregar. Tentando alternativa...');
                 const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js';
+                script.src = 'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js';
                 script.onload = () => console.log('✅ Chart.js carregado via fallback');
                 script.onerror = () => console.error('❌ Fallback também falhou');
                 document.head.appendChild(script);
@@ -264,7 +264,7 @@
 
     <!-- Scripts da aplicação -->
     <script src="js/app.js"></script>
-    <script src="js/charts.js"></script>
+    <script src="js/charts-simple.js"></script>
 
 </body>
 
